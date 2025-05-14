@@ -67,7 +67,7 @@ function AccretionDisk() {
 }
 
 function Scene() {
-  const backgroundTexture = useLoader(THREE.TextureLoader, '/space.jpg')
+  const backgroundTexture = useLoader(THREE.TextureLoader, 'public/space.jpeg')
 
   return (
     <>

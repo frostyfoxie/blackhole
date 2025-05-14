@@ -1,7 +1,4 @@
-// Required dependencies:
-// npm install three @react-three/fiber @react-three/drei
-
-import { Canvas, useFrame, extend, useThree } from '@react-three/fiber'
+import { Canvas, useFrame, useLoader } from '@react-three/fiber'
 import { OrbitControls, Stars, Environment } from '@react-three/drei'
 import * as THREE from 'three'
 import { useRef } from 'react'
@@ -14,14 +11,14 @@ const BlackHoleShaderMaterial = {
     u_radius: { value: 0.1 },
     resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
   },
-  vertexShader: \`
+  vertexShader: `
     varying vec2 vUv;
     void main() {
       vUv = uv;
       gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
     }
-  \`,
-  fragmentShader: \`
+  `,
+  fragmentShader: `
     uniform sampler2D envMap;
     uniform float u_mass;
     uniform float u_radius;
@@ -42,7 +39,7 @@ const BlackHoleShaderMaterial = {
         gl_FragColor = texture2D(envMap, warp);
       }
     }
-  \`
+  `
 }
 
 function BlackHoleBackground({ texture }) {
@@ -51,7 +48,7 @@ function BlackHoleBackground({ texture }) {
   return (
     <mesh>
       <planeGeometry args={[2, 2]} />
-      <shaderMaterial ref={materialRef} args={[BlackHoleShaderMaterial]} uniforms-envMap-value={texture} />
+      <shaderMaterial ref={materialRef} vertexShader={BlackHoleShaderMaterial.vertexShader} fragmentShader={BlackHoleShaderMaterial.fragmentShader} uniforms={{ envMap: { value: texture }, u_mass: { value: 2.0 }, u_radius: { value: 0.1 }, resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) } }} />
     </mesh>
   )
 }
@@ -70,9 +67,7 @@ function AccretionDisk() {
 }
 
 function Scene() {
-  const { gl } = useThree()
-  const loader = new THREE.TextureLoader()
-  const backgroundTexture = loader.load('https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/space.jpg')
+  const backgroundTexture = useLoader(THREE.TextureLoader, '/space.jpg')
 
   return (
     <>
@@ -87,7 +82,7 @@ function Scene() {
 
 export default function App() {
   return (
-    <Canvas camera={{ position: [0, 0, 6], fov: 75 }} frameloop="demand">
+    <Canvas camera={{ position: [0, 0, 6], fov: 75 }}>
       <Scene />
     </Canvas>
   )
